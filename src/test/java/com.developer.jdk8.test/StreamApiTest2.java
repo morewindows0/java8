@@ -1,14 +1,18 @@
 package com.developer.jdk8.test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.developer.jdk8.domain.UserDomain;
@@ -24,7 +28,7 @@ public class StreamApiTest2 {
             new UserDomain("张三", "男", 13), new UserDomain("李四", "男", 136),
             new UserDomain("赵六", "女", 1323), new UserDomain("小刚", "男", 133),
             new UserDomain("小王", "女", 23), new UserDomain("小牛", "男", 13)
-    );
+                                             );
 
     @Test
     public void lambdaTest1() {
@@ -53,7 +57,7 @@ public class StreamApiTest2 {
         //        boolean noneMatch = ListData.stream().noneMatch(item -> item.getName().equals("刘"));
         boolean noneMatch = ListData.stream()
                                     .noneMatch(item -> item.getAge() > 23);
-//        boolean noneMatch = ListData.stream().noneMatch(item -> item.getName().equals("刘"));
+        //        boolean noneMatch = ListData.stream().noneMatch(item -> item.getName().equals("刘"));
 
         System.out.println("检查年龄大于23是否没有匹配所有元素:" + noneMatch);
 
@@ -131,7 +135,7 @@ public class StreamApiTest2 {
         Map<String, UserDomain> collect = ListData.stream()
                                                   .filter(item -> item.getAge() > 123)
                                                   .collect(Collectors.toMap(UserDomain::getName,
-                                                          item -> item));
+                                                                            item -> item));
 
         collect.entrySet()
                .stream()
@@ -153,7 +157,7 @@ public class StreamApiTest2 {
 
         Map<Integer, Map<String, List<UserDomain>>> collect2 = ListData.stream()
                                                                        .collect(Collectors.groupingBy(UserDomain::getAge,
-                                                                               Collectors.groupingBy(UserDomain::getGender)));
+                                                                                                      Collectors.groupingBy(UserDomain::getGender)));
 
         map.entrySet()
            .stream()
@@ -180,7 +184,7 @@ public class StreamApiTest2 {
 
         System.out.println(collect);
 
-        List<String> testJoin=Arrays.asList("1");
+        List<String> testJoin = Arrays.asList("1");
         String collect3 = testJoin.stream().collect(Collectors.joining(","));
 
         List<Long> strings =
@@ -207,7 +211,7 @@ public class StreamApiTest2 {
                                                     .filter(item -> item.getName()
                                                                         .equals("张三"))
                                                     .collect(Collectors.toMap(item -> item,
-                                                            item -> item.getName()));
+                                                                              item -> item.getName()));
         resultMap.entrySet()
                  .stream()
                  .forEach(item -> System.out.println(item.getKey() + "==" + item.getValue()));
@@ -233,6 +237,27 @@ public class StreamApiTest2 {
                                       .collect(Collectors.joining(","));
 
         System.out.println(resultString);
+    }
+
+    @Test
+    public void peekTest() {
+        //        List<UserDomain> tttt = ListData.stream().peek(item -> item.setName("XXXXXX")).collect(Collectors.toList());
+        boolean equals = TestEnum.AUDIT_IMAGE_COUNT_UPPER_LIMIT.getCode().equals("80001014");
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("涉及到-");
+        for (String str : Arrays.asList("1", "2")) {
+            builder.append("test" + ",");
+        }
+        List<Integer> integers = Arrays.asList(1, 2, 4, 5);
+        Collections.shuffle(integers,new Random(new Date().getTime()));
+        System.out.println(integers);
+        System.out.println( builder.substring(0, builder.length() - 1));
+        DateTime now = DateTime.now();
+        long startCreateTime = now.plusDays(-13).toDate().getTime();
+        long endCreateTime = now.plusDays(-6).toDate().getTime();
+        long l = endCreateTime - startCreateTime;
+        long l1 = l / 1000 / 60 / 60/24;
     }
 
 }

@@ -7,10 +7,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.developer.jdk8.domain.UserDomain;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -64,4 +67,19 @@ public class OtherTest {
                                                                  new ThreadPoolExecutor.CallerRunsPolicy());
         poolExecutor.execute(() -> System.out.println("test"));
     }
+
+    @Test
+    public void testListPartition() {
+        List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        Integer integer = list.get(list.size() - 1);
+        List<List<Integer>> partition = Lists.partition(list, 8);
+
+        System.out.println(partition.size());
+        String join = Joiner.on(",").join(list);
+        String join1 = StringUtils.join(list, ",");
+    }
+
+
 }
+
+
