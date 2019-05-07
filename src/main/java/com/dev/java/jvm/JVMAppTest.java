@@ -1,4 +1,4 @@
-package com.dev.java.JVM;
+package com.dev.java.jvm;
 
 /**
  * @author: dengxin.chen
@@ -19,7 +19,5 @@ public class JVMAppTest {
         allocation2 = new byte[2 * bytesize];
         allocation3 = new byte[2 * bytesize];
         allocation4 = new byte[4 * bytesize];
-
-
     }
 }
