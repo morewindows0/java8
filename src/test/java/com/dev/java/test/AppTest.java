@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
  * @date: 2018/8/27 16:18
  * @description:
  */
-@Slf4j
 public class AppTest {
 
     @Test
@@ -201,7 +200,7 @@ public class AppTest {
 
         } catch (Exception e) {
 
-            log.info("出错了{}", e.getMessage(), e);
+
         }
     }
 
@@ -311,7 +310,6 @@ public class AppTest {
         long l1 = l / 1000;
         System.out.println(l1);
 
-        log.info("xxx{},{}", 1, 2);
         System.out.println(this.getClass().getSimpleName().equals(AppTest.class.getSimpleName()));
         System.out.println(seconds);
         Set<Integer> set = Sets.newHashSet();

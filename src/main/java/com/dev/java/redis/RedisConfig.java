@@ -2,7 +2,6 @@ package com.dev.java.redis;
 
 import java.util.Objects;
 
-import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -12,7 +11,6 @@ import redis.clients.jedis.JedisPoolConfig;
  * @date: 2019/4/25 16:17
  * @description:
  */
-@Slf4j
 public class RedisConfig {
 
     /**
@@ -38,10 +36,9 @@ public class RedisConfig {
             config.setMaxIdle(5);
             config.setMaxWaitMillis(1000l);
             config.setTestOnBorrow(false);
-            jedisPool = new JedisPool(config,HOST, PORT);
+            jedisPool = new JedisPool(config, HOST, PORT);
         } catch (Exception e) {
-            log.error("初始化redis连接池异常", e);
-            throw new RuntimeException("初始化redis连接池异常");
+            throw new RuntimeException("初始化redis连接池异常", e);
         }
     }
 
@@ -59,8 +56,7 @@ public class RedisConfig {
             return null;
 
         } catch (Exception e) {
-            log.error("获取redis连接异常", e);
-            throw new RuntimeException("获取redis连接异常");
+            throw new RuntimeException("获取redis连接异常", e);
         }
     }
 

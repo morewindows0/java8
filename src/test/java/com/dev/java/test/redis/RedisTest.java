@@ -5,7 +5,6 @@ import org.junit.Test;
 import com.dev.java.redis.RedisConfig;
 import com.dev.java.redis.RedisDelayingQueue;
 
-import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.SetParams;
 
@@ -14,7 +13,7 @@ import redis.clients.jedis.params.SetParams;
  * @date: 2019/4/25 16:29
  * @description:
  */
-@Slf4j
+
 public class RedisTest {
 
     private Jedis jedis = RedisConfig.getJedis();
@@ -59,7 +58,6 @@ public class RedisTest {
             queue.setStopFlag(true);
             consumer.join();
         } catch (Exception e) {
-            log.error("出现异常", e);
         }
         RedisConfig.closeRedis(jedis);
     }
