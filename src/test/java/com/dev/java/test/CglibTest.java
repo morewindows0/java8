@@ -40,7 +40,7 @@ public class CglibTest {
      * 具体方法拦截cglib
      */
     @Test
-    public void cglibTest1() {
+    public void cglibAnotherTest() {
 
         DaoAnotherProxy daoAnotherProxy = new DaoAnotherProxy();
         DaoProxy daoProxy = new DaoProxy();
@@ -51,6 +51,8 @@ public class CglibTest {
 
         //设置回调方法的顺序“select”返回为0，则对应callbacks中0位置的daoProxy
         enhancer.setCallbackFilter(new DaoFilter());
+        // 不拦截构造函数中的方法
+        enhancer.setInterceptDuringConstruction(false);
 
         Dao dao = (Dao) enhancer.create();
 

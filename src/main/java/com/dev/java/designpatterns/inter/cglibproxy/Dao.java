@@ -7,6 +7,11 @@ package com.dev.java.designpatterns.inter.cglibproxy;
  */
 public class Dao {
 
+    public Dao() {
+        System.out.println("构造函数中执行update方法");
+        update();
+    }
+
     public void update() {
         System.out.println("执行update方法");
     }
