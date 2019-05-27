@@ -1,5 +1,6 @@
 package com.dev.java.test;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.RandomUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -42,28 +44,27 @@ public class WeightTest {
     public static List<String> getWeightValue(Map<String, Integer> config, List<String> inputList) {
         if (MapUtils.isEmpty(config)) {
             // 随机乱序
+            Collections.shuffle(inputList, new Random());
+            return inputList;
         }
-        config.entrySet().stream().map(e->{
+        List<String> weightResult = Lists.newArrayList();
 
-        })
-        Iterator<String> iterator = config.keySet().iterator();
-        List<String> tmpList = Lists.newArrayList();
-        while (iterator.hasNext()) {
-            String question = iterator.next();
-            int weight = config.get(question);
-            for (int i = 0; i < weight; i++) {
-                tmpList.add(question);
+        config.entrySet().parallelStream().forEach(e -> {
+            for (int index = 0, size = e.getValue(); index < size; index++) {
+                weightResult.add(e.getKey());
             }
-        }
-        Random random = new Random();
-        int randomPos = random.nextInt(tmpList.size());
-        String key = tmpList.get(randomPos);
+        });
+
+        int randomPos = RandomUtils.nextInt(0, 100);
+        System.out.println(randomPos);
+        String key = weightResult.get(randomPos);
         Optional<String> collect = inputList.stream().filter(e -> e.equals(key)).findFirst();
         if (collect.isPresent()) {
             List<String> collect1 = inputList.stream().filter(e -> !e.equals(key)).collect(Collectors.toList());
             collect1.add(0, collect.get());
             return collect1;
         }
+        // 抽取乱序公共方法进行返回即可
         return inputList;
     }
 }
