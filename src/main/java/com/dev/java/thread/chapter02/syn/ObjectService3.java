@@ -5,12 +5,12 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 /**
- * @author: dengxin.chen
- * @date: 2018/11/15 9:46
- * @description: 演示线程调用不确定性出现脏读的问题
+ * @author: developer
+ * @date: 2019/5/6 22:24
+ * @description:
  */
-public class ObjectService3 {
 
+public class ObjectService3 {
     public MyOneList addServiceMethod(MyOneList list, String data) {
         try {
             synchronized (list) {

@@ -1,6 +1,6 @@
 package com.dev.java.designpatterns.inter.proxy.impl;
 
-import com.dev.java.designpatterns.inter.proxy.Server;
+
 
 /**
  * @author: dengxin.chen

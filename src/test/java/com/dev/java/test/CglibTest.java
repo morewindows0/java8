@@ -59,5 +59,9 @@ public class CglibTest {
         //这里首先调用的是select方法
         dao.select();
         dao.update();
+
+        Integer integer=new Integer(0);
+        System.out.println(integer.hashCode());
     }
+
 }
