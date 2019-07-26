@@ -10,12 +10,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.dev.java.domain.UserDomain;
+import com.dev.java.time.TimeUtils;
 import com.google.common.base.Splitter;
 
 /**
@@ -25,10 +27,10 @@ import com.google.common.base.Splitter;
  */
 public class StreamApiTest2 {
     List<UserDomain> ListData = Arrays.asList(
-            new UserDomain("张三", "男", 13), new UserDomain("李四", "男", 136),
-            new UserDomain("赵六", "女", 1323), new UserDomain("小刚", "男", 133),
-            new UserDomain("小王", "女", 23), new UserDomain("小牛", "男", 13)
-                                             );
+            new UserDomain("A", "男", 13), new UserDomain("B", "男", 136),
+            new UserDomain("C", "女", 1323), new UserDomain("D", "男", 133),
+            new UserDomain("E", "女", 23), new UserDomain("F", "男", 13)
+    );
 
     @Test
     public void lambdaTest1() {
@@ -135,7 +137,7 @@ public class StreamApiTest2 {
         Map<String, UserDomain> collect = ListData.stream()
                                                   .filter(item -> item.getAge() > 123)
                                                   .collect(Collectors.toMap(UserDomain::getName,
-                                                                            item -> item));
+                                                          item -> item));
 
         collect.entrySet()
                .stream()
@@ -157,7 +159,7 @@ public class StreamApiTest2 {
 
         Map<Integer, Map<String, List<UserDomain>>> collect2 = ListData.stream()
                                                                        .collect(Collectors.groupingBy(UserDomain::getAge,
-                                                                                                      Collectors.groupingBy(UserDomain::getGender)));
+                                                                               Collectors.groupingBy(UserDomain::getGender)));
 
         map.entrySet()
            .stream()
@@ -211,7 +213,7 @@ public class StreamApiTest2 {
                                                     .filter(item -> item.getName()
                                                                         .equals("张三"))
                                                     .collect(Collectors.toMap(item -> item,
-                                                                              item -> item.getName()));
+                                                            item -> item.getName()));
         resultMap.entrySet()
                  .stream()
                  .forEach(item -> System.out.println(item.getKey() + "==" + item.getValue()));
@@ -241,23 +243,28 @@ public class StreamApiTest2 {
 
     @Test
     public void peekTest() {
-        //        List<UserDomain> tttt = ListData.stream().peek(item -> item.setName("XXXXXX")).collect(Collectors.toList());
+        List<UserDomain> sorted = ListData.stream().sorted(Comparator.comparing(UserDomain::getAge).thenComparing(Comparator.comparing(UserDomain::getName)).reversed()).collect(Collectors.toList());
+        String s = TimeUtils.formatDate(new Date(), "MM-dd HH:mm");
+        Map<String, UserDomain> collect = ListData.stream().collect(Collectors.toMap(UserDomain::getGender, Function.identity(),(oldValue, newValue) -> newValue));
+        List<UserDomain> tttt = ListData.stream().peek(item -> item.setName("XXXXXX")).collect(Collectors.toList());
         boolean equals = TestEnum.AUDIT_IMAGE_COUNT_UPPER_LIMIT.getCode().equals("80001014");
-
+        Integer age = tttt.stream().filter(item -> item.getAge() == 23).findFirst().orElseGet(() -> new UserDomain("张三", "男", 13)).getAge();
         StringBuilder builder = new StringBuilder();
         builder.append("涉及到-");
         for (String str : Arrays.asList("1", "2")) {
             builder.append("test" + ",");
         }
         List<Integer> integers = Arrays.asList(1, 2, 4, 5);
-        Collections.shuffle(integers,new Random(new Date().getTime()));
+        Collections.shuffle(integers, new Random(new Date().getTime()));
         System.out.println(integers);
-        System.out.println( builder.substring(0, builder.length() - 1));
+        System.out.println(builder.substring(0, builder.length() - 1));
         DateTime now = DateTime.now();
         long startCreateTime = now.plusDays(-13).toDate().getTime();
         long endCreateTime = now.plusDays(-6).toDate().getTime();
         long l = endCreateTime - startCreateTime;
-        long l1 = l / 1000 / 60 / 60/24;
+        long l1 = l / 1000 / 60 / 60 / 24;
+
+
     }
 
 }

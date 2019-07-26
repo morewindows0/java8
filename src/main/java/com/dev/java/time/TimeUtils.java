@@ -8,6 +8,8 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import com.dev.java.enums.TimeTntervalEnum;
 
 /**
@@ -117,6 +119,7 @@ public class TimeUtils {
         }
 
         LocalDateTime tmpDateTime = date2LocalDateTime(date);
+
         //这里获取一个月的最大天数，进行了平闰年的判断
         int days = tmpDateTime.getMonth().length(tmpDateTime.toLocalDate().isLeapYear());
 
@@ -197,4 +200,19 @@ public class TimeUtils {
         return localDateTime2Date(tmpLocalDateTime);
 
     }
+
+    /**
+     * 格式化日期
+     *
+     * @param date       日期
+     * @param dateFormat 日期格式
+     */
+    public static String formatDate(Date date, String dateFormat) {
+        if (date == null) {
+            return null;
+        }
+        FastDateFormat fastDateFormat = FastDateFormat.getInstance(dateFormat);
+        return fastDateFormat.format(date);
+    }
+
 }
