@@ -41,8 +41,8 @@ public class ProcessExeclFile {
 //        processOptionLevel();
 //        partitionExcel();
 //        processLocationData();
-        processFirstOrder();
-
+//        processFirstOrder();
+        processExcel();
     }
 
     /**
@@ -180,6 +180,40 @@ public class ProcessExeclFile {
             sql.append("AND order_status IN (20, 25) AND is_test = 0 GROUP BY buyer_id;");
             try {
                 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("D:/sql" + index + ".txt"));
+                bufferedWriter.write(sql.toString());
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            index++;
+        }
+
+    }
+
+    // 最近七天
+    public static void processExcel() throws Exception {
+        InputStream inputStream = new FileInputStream("C:\\Users\\dengxin.chen\\Desktop\\连续两周下单用户数.xlsx");
+        List<Object> dataList = EasyExcelFactory.read(inputStream, new Sheet(1, 1));
+        List<String> data = Lists.newArrayList();
+        dataList.forEach(e -> {
+            ArrayList dataItem = (ArrayList) e;
+            data.add((String) dataItem.get(0));
+
+        });
+        final List<String> collect = data.stream().distinct().collect(Collectors.toList());
+        List<List<String>> partitions = Lists.partition(collect, 1000);
+        int index = 0;
+        for (List<String> partition : partitions) {
+            String join = Joiner.on(",").join(partition);
+            StringBuilder sql = new StringBuilder();
+//            sql.append("SELECT buyer_id,if(count(1)=0,\"7天内无订单\",\"7天内有订单\") as '是否有订单'" + " FROM t_orders WHERE buyer_id in ( ");
+            sql.append("SELECT user_id,order_no,if(count(1)=0,\"7天内无问句\",\"7天内有问句\") as '是否有问句 ' from question_record where user_id in ( ");
+            sql.append(join + ")");
+//            sql.append("AND order_status IN (20, 25) AND is_test = 0 AND create_time >= '2019-07-22 00:00:00' AND create_time <= '2019-07-28 23:59:59' GROUP BY buyer_id;");
+            sql.append("AND is_test = 0 AND create_time >= '2019-07-22 00:00:00' AND create_time <= '2019-07-28 23:59:59' GROUP BY user_id;");
+            try {
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("D:/sql--" + index + ".txt"));
                 bufferedWriter.write(sql.toString());
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
