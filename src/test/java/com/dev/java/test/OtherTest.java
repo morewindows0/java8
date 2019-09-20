@@ -21,6 +21,15 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  */
 public class OtherTest {
 
+    private static  Integer  i = 1;
+
+    public static void main(String[] args) throws InterruptedException {
+        new Thread(() -> i++).start();
+        new Thread(() -> i++).start();
+        Thread.sleep(3);
+        System.out.println(i);
+    }
+
     @Test
     public void arrayUtilsTest() {
         Integer[] intArray = {1, 2, 3};
