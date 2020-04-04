@@ -1,24 +1,39 @@
 package com.dev.java.test;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.dev.java.domain.UserDomain;
 import com.dev.java.time.TimeUtils;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.i18n.phonenumbers.PhoneNumberMatch;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+
+import sun.util.locale.provider.LocaleProviderAdapter;
+import sun.util.locale.provider.ResourceBundleBasedAdapter;
+import sun.util.resources.OpenListResourceBundle;
 
 /**
  * @author: dengxin.chen
@@ -28,9 +43,9 @@ import com.google.common.base.Splitter;
 public class StreamApiTest2 {
     List<UserDomain> ListData = Arrays.asList(
             new UserDomain("A", "男", 13), new UserDomain("B", "男", 136),
-            new UserDomain("C", "女", 1323), new UserDomain("D", "男", 133),
-            new UserDomain("E", "女", 23), new UserDomain("F", "男", 13)
-    );
+            new UserDomain("C", "女", 1323), new UserDomain("D", "男", 14),
+            new UserDomain("E", "女", 23), new UserDomain("F", "男", 15)
+                                             );
 
     @Test
     public void lambdaTest1() {
@@ -137,7 +152,7 @@ public class StreamApiTest2 {
         Map<String, UserDomain> collect = ListData.stream()
                                                   .filter(item -> item.getAge() > 123)
                                                   .collect(Collectors.toMap(UserDomain::getName,
-                                                          item -> item));
+                                                                            item -> item));
 
         collect.entrySet()
                .stream()
@@ -159,7 +174,7 @@ public class StreamApiTest2 {
 
         Map<Integer, Map<String, List<UserDomain>>> collect2 = ListData.stream()
                                                                        .collect(Collectors.groupingBy(UserDomain::getAge,
-                                                                               Collectors.groupingBy(UserDomain::getGender)));
+                                                                                                      Collectors.groupingBy(UserDomain::getGender)));
 
         map.entrySet()
            .stream()
@@ -213,7 +228,7 @@ public class StreamApiTest2 {
                                                     .filter(item -> item.getName()
                                                                         .equals("张三"))
                                                     .collect(Collectors.toMap(item -> item,
-                                                            item -> item.getName()));
+                                                                              item -> item.getName()));
         resultMap.entrySet()
                  .stream()
                  .forEach(item -> System.out.println(item.getKey() + "==" + item.getValue()));
@@ -245,7 +260,7 @@ public class StreamApiTest2 {
     public void peekTest() {
         List<UserDomain> sorted = ListData.stream().sorted(Comparator.comparing(UserDomain::getAge).thenComparing(Comparator.comparing(UserDomain::getName)).reversed()).collect(Collectors.toList());
         String s = TimeUtils.formatDate(new Date(), "MM-dd HH:mm");
-        Map<String, UserDomain> collect = ListData.stream().collect(Collectors.toMap(UserDomain::getGender, Function.identity(),(oldValue, newValue) -> newValue));
+        Map<String, UserDomain> collect = ListData.stream().collect(Collectors.toMap(UserDomain::getGender, Function.identity(), (oldValue, newValue) -> newValue));
         List<UserDomain> tttt = ListData.stream().peek(item -> item.setName("XXXXXX")).collect(Collectors.toList());
         boolean equals = TestEnum.AUDIT_IMAGE_COUNT_UPPER_LIMIT.getCode().equals("80001014");
         Integer age = tttt.stream().filter(item -> item.getAge() == 23).findFirst().orElseGet(() -> new UserDomain("张三", "男", 13)).getAge();
@@ -263,8 +278,92 @@ public class StreamApiTest2 {
         long endCreateTime = now.plusDays(-6).toDate().getTime();
         long l = endCreateTime - startCreateTime;
         long l1 = l / 1000 / 60 / 60 / 24;
+    }
+
+    @Test
+    public void filterTest() {
+        List<String> names = Arrays.asList("A", "B", "C");
+        List<UserDomain> collect = ListData.stream().filter(e -> names.contains(e.getName())).collect(Collectors.toList());
+        System.out.println(collect);
+
+        System.out.println(Long.MAX_VALUE);
 
 
+        ResourceBundleBasedAdapter resourceBundleBasedAdapter = ((ResourceBundleBasedAdapter) LocaleProviderAdapter.forJRE());
+        OpenListResourceBundle resource = resourceBundleBasedAdapter.getLocaleData().getLocaleNames(Locale.CHINA);
+        Set<String> data = resource.keySet();
+        List<String> twoCodes = data.stream()
+                                    // 提取出国家的二字码，长度为2和全是大写
+                                    .filter(code -> code.length() == 2 && StringUtils.isAllUpperCase(code))
+                                    .collect(Collectors.toList());
+        twoCodes.sort(Comparator.naturalOrder());
+
+        System.out.println("size: " + twoCodes.size());
+        twoCodes.forEach(twoCode -> {
+            Locale locale = new Locale("", twoCode);
+            String threeCode = null;
+            try {
+                // 获取国家的三字码
+                threeCode = locale.getISO3Country();
+            } catch (Exception e) {
+            }
+            String format = String.format("%-5s %-5s %-20s\n", twoCode, threeCode, resource.getString(twoCode));
+            System.out.println(format);
+        });
+    }
+
+    @Test
+    public void countryTest() {
+        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+
+        String regionCodeForCountryCode = phoneUtil.getRegionCodeForCountryCode(+86);
+        ResourceBundleBasedAdapter resourceBundleBasedAdapter = ((ResourceBundleBasedAdapter) LocaleProviderAdapter.forJRE());
+        OpenListResourceBundle resource = resourceBundleBasedAdapter.getLocaleData().getLocaleNames(Locale.CHINA);
+        String string = resource.getString(regionCodeForCountryCode);
+        System.out.println(regionCodeForCountryCode);
+        System.out.println(string);
+
+        Map<String, String> nationCodeMap = null;
+
+
+        Locale[] locales = Locale.getAvailableLocales();
+        // 过滤为空的数据
+        Set<Locale> resultSet = Arrays.stream(locales).filter(e -> StringUtils.isNotEmpty(e.getCountry())).collect(Collectors.toSet());
+        // 构建map key-CN形式 value-中国形式
+        nationCodeMap = resultSet.stream().collect(Collectors.toMap(Locale::getCountry, Locale::getDisplayCountry, (oldVal, currVal) -> currVal));
+
+        String nationString = nationCodeMap.get(regionCodeForCountryCode);
+        System.out.println(nationString);
+    }
+
+
+    @Test
+    public void fieldTest() {
+
+        UserDomain userDomain = new UserDomain();
+        Map<String, Object> stringObjectMap = object2Map(userDomain);
+
+        Date date = new Date(1585584000000L);
+
+        FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd");
+
+
+    }
+
+    private Map<String, Object> object2Map(Object object) {
+        Map<String, Object> map = Maps.newHashMap();
+        for (Field field : object.getClass().getDeclaredFields()) {
+            try {
+                boolean accessible = field.isAccessible();
+                field.setAccessible(true);
+                Object value = field.get(object);
+                map.put(field.getName(), value);
+                field.setAccessible(accessible);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException("对象转换错误", e);
+            }
+        }
+        return map;
     }
 
 }
