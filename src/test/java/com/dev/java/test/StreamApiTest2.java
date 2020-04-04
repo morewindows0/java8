@@ -326,6 +326,8 @@ public class StreamApiTest2 {
         Map<String, String> nationCodeMap = null;
 
 
+
+
         Locale[] locales = Locale.getAvailableLocales();
         // 过滤为空的数据
         Set<Locale> resultSet = Arrays.stream(locales).filter(e -> StringUtils.isNotEmpty(e.getCountry())).collect(Collectors.toSet());
